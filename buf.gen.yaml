@@ -1,0 +1,10 @@
+# see: https://buf.build/docs/configuration/v2/buf-gen-yaml
+version: v2
+plugins:
+  - local: protoc-gen-es
+    opt:
+      - target=ts
+    out: .
+  - local: ["tsx", "./plugins/protoc-gen-cosmes.ts"]
+    opt: target=ts
+    out: .
