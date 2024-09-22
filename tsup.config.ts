@@ -12,5 +12,5 @@ export default defineConfig({
   target: "esnext",
   format: ["esm", "cjs"],
   treeshake: "recommended",
-  entry: ["**/**.ts"],
+  entry: ["protobufs/index.ts"],
 });
