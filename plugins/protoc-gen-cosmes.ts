@@ -9,14 +9,14 @@
  * Do not convert this to a TS file as it runs 4x slower!
  */
 
+import type { DescService } from "@bufbuild/protobuf";
 import {
+  type GeneratedFile,
+  type Schema,
   createEcmaScriptPlugin,
   runNodeJs,
-  type Schema,
-  type GeneratedFile,
   safeIdentifier,
 } from "@bufbuild/protoplugin";
-import type { DescService } from "@bufbuild/protobuf";
 
 export function generateTs(schema: Schema) {
   for (const protoFile of schema.files) {
@@ -37,13 +37,13 @@ function generateService(f: GeneratedFile, service: DescService) {
     const outputType = f.importShape(method.output);
     const outputDesc = f.importSchema(method.output);
     f.print(f.jsDoc(method));
-    const { toBinary, fromBinary } = f.runtime;
+    const { toBinary, fromBinary, toJson, create } = f.runtime;
     f.print(f.export("const", safeIdentifier(service.name + method.name + "Service")), "= {");
     f.print("  typeName: TYPE_NAME,");
     f.print("  method: ", f.string(method.name), ",");
     f.print("  request: {");
     f.print("      toBinary(msg: Omit<", inputType, ", '$unknown' | '$typeName'>) {");
-    f.print("        return ", toBinary, "(", inputDesc, ", msg as ", inputType, ");");
+    f.print("        return ", toBinary, "(", inputDesc, ",", create, "(", inputDesc, ", msg));");
     f.print("      },");
     f.print("      fromBinary(bytes: Uint8Array) {");
     f.print("        return ", fromBinary, "(", inputDesc, ", bytes);");
@@ -51,10 +51,11 @@ function generateService(f: GeneratedFile, service: DescService) {
     f.print("  },");
     f.print("  response: {");
     f.print("      toBinary(msg: Omit<", outputType, ", '$unknown' | '$typeName'>) {");
-    f.print("        return ", toBinary, "(", outputDesc, ", msg as ", outputType, ");");
+    f.print("        return ", toBinary, "(", outputDesc, ",", create, "(", outputDesc, ", msg));");
     f.print("    },");
     f.print("    fromBinary(bytes: Uint8Array) {");
-    f.print("      return ", fromBinary, "(", outputDesc, ", bytes);");
+    // biome-ignore format: no formatting
+    f.print("      return ", toJson, "(", outputDesc, ",", fromBinary, "(", outputDesc, ", bytes));");
     f.print("    }");
     f.print("  }");
     f.print("} as const;");

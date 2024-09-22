@@ -1,22 +1,16 @@
 {
   "name": "cosmes-types",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "description": "TBD",
   "license": "MIT",
   "scripts": {
     "buf:generate": "tsx scripts/generate.ts",
-    "lint": "pnpm biome check --write src",
-    "lint:fix": "pnpm biome ci ./src",
+    "lint": "pnpm biome check --write build",
+    "lint:fix": "pnpm biome ci ./build",
     "build": "pnpm tsup --clean"
   },
-  "exports": {
-    ".": {
-      "types": "./build/index.d.ts",
-      "import": "./build/index.mjs",
-      "default": "./build/index.js"
-    }
-  },
-  "files": ["build"],
+  "main": "protobufs/index.ts",
+  "files": ["protobufs"],
   "contributors": [
     "j0nl1 <javieragv@protonmail.com>"
   ],
@@ -33,5 +27,8 @@
     "degit": "^2.8.4",
     "glob": "^11.0.0",
     "tsx": "^4.19.1"
+  },
+  "peerDependencies": {
+    "@bufbuild/protobuf": ">=2.0.0"
   }
 }
